@@ -18,6 +18,9 @@ tokio-core = "0.1.2"
 tk-http = "0.1.2"
 futures = "0.1.10"
 log = "0.3.7"
+abstract-ns = "0.3.2"
+tk-pool = "0.3.0"
 
 [dev-dependencies]
 env_logger = "0.4.2"
+tk-easyloop = "0.1.1"
