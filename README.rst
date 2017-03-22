@@ -2,7 +2,7 @@
 Cantal Client Library
 =====================
 
-:Status: Beta
+:Status: Alpha
 :Documentation: http://docs.rs/tk-cantal/
 
 
