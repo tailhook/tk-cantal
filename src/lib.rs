@@ -5,6 +5,7 @@ extern crate tk_http;
 extern crate tk_pool;
 extern crate tokio_core;
 
+#[macro_use] extern crate log;
 #[macro_use] extern crate quick_error;
 
 mod connect;

@@ -1,8 +1,10 @@
 use std::time::SystemTime;
+use std::str::from_utf8;
 
 use futures::{Async, Sink, AsyncSink};
 use futures::future::{FutureResult, ok};
 use futures::sync::oneshot::{channel, Sender, Receiver};
+use rustc_serialize::json::decode;
 use tk_http::client as http;
 use tk_http::{Status, Version};
 use tokio_core::io::Io;
@@ -36,20 +38,25 @@ pub struct Peer {
 
 #[derive(Debug)]
 pub struct PeersResponse {
-    pub timestamp: SystemTime,
+    pub requested: SystemTime,
     pub received: SystemTime,
     pub peers: Vec<Peer>,
 }
 
 
 struct PeersCodec {
-    tx: Sender<PeersResponse>,
+    request_time: SystemTime,
+    tx: Option<Sender<PeersResponse>>,
 }
 
 impl Connection {
     pub fn get_peers(&self) -> ResponseFuture<PeersResponse> {
         let (tx, rx) = channel();
-        match self.pool.clone().start_send(Box::new(PeersCodec { tx: tx })) {
+        let pcodec = PeersCodec {
+            request_time: SystemTime::now(),
+            tx: Some(tx),
+        };
+        match self.pool.clone().start_send(Box::new(pcodec)) {
             Ok(AsyncSink::NotReady(_)) => response::not_connected(),
             Ok(AsyncSink::Ready) => response::from_channel(rx),
             Err(_send_error) => response::not_connected(),
@@ -77,6 +84,33 @@ impl<S: Io> http::Codec<S> for PeersCodec {
     fn data_received(&mut self, data: &[u8], end: bool)
         -> Result<Async<usize>, http::Error>
     {
-        unimplemented!();
+        #[derive(Debug, RustcEncodable, RustcDecodable)]
+        pub struct Response {
+            peers: Vec<Peer>,
+        }
+
+        debug_assert!(end);
+        let decoded = match from_utf8(data) {
+            Ok(data) => data,
+            Err(e) => {
+                error!("Error reading peers data, bad utf8: {}", e);
+                drop(self.tx.take().expect("sender is still alive"));
+                return Ok(Async::Ready(data.len()));
+            }
+        };
+        let decoded: Response = match decode(decoded) {
+            Ok(data) => data,
+            Err(e) => {
+                error!("Error decoding peers data: {}", e);
+                drop(self.tx.take().expect("sender is still alive"));
+                return Ok(Async::Ready(data.len()));
+            }
+        };
+        self.tx.take().expect("sender is still alive").send(PeersResponse {
+            requested: self.request_time,
+            received: SystemTime::now(),
+            peers: decoded.peers,
+        });
+        return Ok(Async::Ready(data.len()));
     }
 }
