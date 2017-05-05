@@ -14,8 +14,9 @@ version = "0.1.0"
 authors = ["paul@colomiets.name"]
 
 [dependencies]
-tokio-core = "0.1.2"
-tk-http = "0.1.2"
+tokio-core = "0.1.6"
+tokio-io = "0.1.1"
+tk-http = "0.2.1"
 futures = "0.1.11"
 log = "0.3.7"
 abstract-ns = "0.3.2"

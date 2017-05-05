@@ -3,11 +3,10 @@ use std::str::from_utf8;
 
 use futures::{Async, Sink, AsyncSink};
 use futures::future::{FutureResult, ok};
-use futures::sync::oneshot::{channel, Sender, Receiver};
+use futures::sync::oneshot::{channel, Sender};
 use rustc_serialize::json::decode;
 use tk_http::client as http;
 use tk_http::{Status, Version};
-use tokio_core::io::Io;
 
 use {Connection, ResponseFuture};
 use errors::BadResponse;
@@ -64,7 +63,7 @@ impl Connection {
     }
 }
 
-impl<S: Io> http::Codec<S> for PeersCodec {
+impl<S> http::Codec<S> for PeersCodec {
     type Future = FutureResult<http::EncoderDone<S>, http::Error>;
 
     fn start_write(&mut self, mut e: http::Encoder<S>) -> Self::Future {
@@ -110,7 +109,9 @@ impl<S: Io> http::Codec<S> for PeersCodec {
             requested: self.request_time,
             received: SystemTime::now(),
             peers: decoded.peers,
-        });
+        }).map_err(|_| {
+            debug!("Can't send response for peers request, oneshot is closed");
+        }).ok();
         return Ok(Async::Ready(data.len()));
     }
 }

@@ -18,7 +18,7 @@ impl<T> Future for ResponseFuture<T> {
         match self.0 {
             State::Waiting(ref mut f) => match f.poll() {
                 Ok(x) => Ok(x),
-                Err(e) => Err(Error::custom(BadResponse::Canceled)),
+                Err(_) => Err(Error::custom(BadResponse::Canceled)),
             },
             State::Error(ref mut e) => {
                 Err(e.take().expect("error is not taken"))
@@ -34,8 +34,4 @@ pub fn not_connected<T>() -> ResponseFuture<T> {
 
 pub fn from_channel<T>(s: Receiver<T>) -> ResponseFuture<T> {
     ResponseFuture(State::Waiting(s))
-}
-
-pub fn from_error<T, E>(e: Error) -> ResponseFuture<T> {
-    ResponseFuture(State::Error(Some(e)))
 }
