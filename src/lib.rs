@@ -17,6 +17,7 @@ mod errors;
 
 pub use connect::connect_local;
 pub use response::ResponseFuture;
+pub use peers::{PeersResponse, Peer};
 
 
 /// Connection abstraction used to fetch data from the cantal

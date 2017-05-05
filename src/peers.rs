@@ -35,10 +35,14 @@ pub struct Peer {
     pub last_report_direct: Option<u64>,
 }
 
+/// A response to the `get_peers()` request
 #[derive(Debug)]
 pub struct PeersResponse {
+    /// A timestamp when `get_peers()` wasa issued
     pub requested: SystemTime,
+    /// A timestamp when response to the request was received
     pub received: SystemTime,
+    /// Actual list of peer data
     pub peers: Vec<Peer>,
 }
 

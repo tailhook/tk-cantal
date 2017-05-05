@@ -4,6 +4,7 @@ use tk_http::client::Error;
 use errors::BadResponse;
 
 
+/// Future returned by connection methods that fetches data T from cantal
 pub struct ResponseFuture<T>(State<T>);
 
 pub enum State<T> {

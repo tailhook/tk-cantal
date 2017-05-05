@@ -15,6 +15,7 @@ use {Connection};
 pub type Pool = tk_pool::Pool<Box<Codec<TcpStream,
         Future=FutureResult<EncoderDone<TcpStream>, Error>>>>;
 
+/// Connects to the cantal instance on localhost
 pub fn connect_local(h: &Handle) -> Connection {
     let h1 = h.clone();
     let pool_config = PConfig::new()
