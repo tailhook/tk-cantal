@@ -10,7 +10,7 @@ keywords = ["cantal", "metrics", "tokio", "monitoring"]
 categories = ["asynchronous", "network-programming"]
 homepage = "http://github.com/tailhook/tk-cantal"
 documentation = "http://docs.rs/tk-cantal"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["paul@colomiets.name"]
 
 [dependencies]
