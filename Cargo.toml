@@ -16,10 +16,10 @@ authors = ["paul@colomiets.name"]
 [dependencies]
 tokio-core = "0.1.6"
 tokio-io = "0.1.1"
-tk-http = "0.2.1"
+tk-http = "0.3.3"
 futures = "0.1.11"
 log = "0.3.7"
-abstract-ns = "0.3.2"
+abstract-ns = "0.4.1"
 tk-pool = "0.3.0"
 rustc-serialize = "0.3.23"
 quick-error = "1.1.0"

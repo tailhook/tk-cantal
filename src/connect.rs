@@ -1,8 +1,7 @@
 use std::net::SocketAddr;
 
-use abstract_ns::StaticStream;
-use futures::Stream;
-use futures::future::FutureResult;
+use futures::{Stream, Future};
+use futures::future::{FutureResult, ok, empty};
 use tk_http::client::{Proto, Config as HConfig, Codec};
 use tk_http::client::{Error, EncoderDone};
 use tk_pool::uniform::{UniformMx, Config as PConfig};
@@ -26,8 +25,9 @@ pub fn connect_local(h: &Handle) -> Connection {
         .done();
     let multiplexer = UniformMx::new(&h,
         &pool_config,
-        StaticStream::new("127.0.0.1:22682".parse::<SocketAddr>().unwrap())
-            .map_err(|e| Error::custom(e)),
+        ok("127.0.0.1:22682".parse::<SocketAddr>().unwrap().into())
+            .into_stream()
+            .chain(empty::<_, Error>().into_stream()),
         move |addr| Proto::connect_tcp(addr, &connection_config, &h1));
     let queue_size = 10;
     let pool = tk_pool::Pool::create(&h, queue_size, multiplexer);
