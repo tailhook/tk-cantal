@@ -1,10 +1,10 @@
 use std::time::SystemTime;
-use std::str::from_utf8;
 
+use failure::{Fail};
 use futures::{Async, Sink, AsyncSink};
 use futures::future::{FutureResult, ok};
 use futures::sync::oneshot::{channel, Sender};
-use rustc_serialize::json::decode;
+use serde_json::from_slice;
 use tk_http::client as http;
 use tk_http::{Status, Version};
 
@@ -21,8 +21,7 @@ use response;
 // TODO(tailhook) Turn timestamps into timestamps.
 //                We keep old values here for easier migration of verwalter,
 //                should fix as soon as possible.
-// TODO(tailhook) Use serde
-#[derive(Debug, RustcEncodable, RustcDecodable)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Peer {
     pub id: String,
     pub hostname: String,
@@ -30,9 +29,12 @@ pub struct Peer {
     pub primary_addr: Option<String>,
     pub addresses: Vec<String>,
     /// Known to this host, unixtime in milliseconds
-    pub known_since: u64,
-    /// Last report directly to this node unixtime in milliseconds
-    pub last_report_direct: Option<u64>,
+    #[serde(with="::serde_millis")]
+    pub known_since: SystemTime,
+    // /// Last report directly to this node unixtime in milliseconds
+    // TODO(tailhook) when serde_millis fixes it
+    //#[serde(with="::serde_millis")]
+    //pub last_report_direct: Option<SystemTime>,
 }
 
 /// A response to the `get_peers()` request
@@ -80,28 +82,20 @@ impl<S> http::Codec<S> for PeersCodec {
     {
         if headers.status() != Some(Status::Ok) {
             return Err(http::Error::custom(
-                BadResponse::Status(headers.status())));
+                BadResponse::Status(headers.status()).compat()));
         }
         Ok(http::RecvMode::buffered(10_485_760))
     }
     fn data_received(&mut self, data: &[u8], end: bool)
         -> Result<Async<usize>, http::Error>
     {
-        #[derive(Debug, RustcEncodable, RustcDecodable)]
+        #[derive(Debug, Deserialize, Serialize)]
         pub struct Response {
             peers: Vec<Peer>,
         }
 
         debug_assert!(end);
-        let decoded = match from_utf8(data) {
-            Ok(data) => data,
-            Err(e) => {
-                error!("Error reading peers data, bad utf8: {}", e);
-                drop(self.tx.take().expect("sender is still alive"));
-                return Ok(Async::Ready(data.len()));
-            }
-        };
-        let decoded: Response = match decode(decoded) {
+        let decoded: Response = match from_slice(data) {
             Ok(data) => data,
             Err(e) => {
                 error!("Error decoding peers data: {}", e);

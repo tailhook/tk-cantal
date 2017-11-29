@@ -1,14 +1,18 @@
 #[warn(missing_docs)]
 extern crate abstract_ns;
+extern crate failure;
 extern crate futures;
-extern crate rustc_serialize;
+extern crate serde;
+extern crate serde_json;
+extern crate serde_millis;
 extern crate tk_http;
 extern crate tk_pool;
 extern crate tokio_core;
 extern crate tokio_io;
 
 #[macro_use] extern crate log;
-#[macro_use] extern crate quick_error;
+#[macro_use] extern crate serde_derive;
+#[macro_use] extern crate failure_derive;
 
 mod connect;
 mod peers;
