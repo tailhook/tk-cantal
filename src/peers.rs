@@ -18,23 +18,39 @@ use response;
 /// We currently include only a subset of data reported by cantal here.
 /// Mostly things that are unlikely to change in future. This will be fixed
 /// when cantal grows stable API.
-// TODO(tailhook) Turn timestamps into timestamps.
-//                We keep old values here for easier migration of verwalter,
-//                should fix as soon as possible.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Peer {
+    /// Host identifier (machine-id)
     pub id: String,
+    /// Hostname of the host
     pub hostname: String,
+    /// Name of the host, usually FQDN
     pub name: String,
+    /// Primary IP address (which works of pings, etc)
     pub primary_addr: Option<String>,
+    /// The list of all IP addresses of the host
     pub addresses: Vec<String>,
-    /// Known to this host, unixtime in milliseconds
+
+    /// Time when peer became known to this host
     #[serde(with="::serde_millis")]
     pub known_since: SystemTime,
-    // /// Last report directly to this node unixtime in milliseconds
-    // TODO(tailhook) when serde_millis fixes it
-    #[serde(with="::serde_millis")]
+
+    /// Time of last report across the network
+    #[serde(with="::serde_millis", default)]
+    pub last_report: Option<SystemTime>,
+
+    /// Last time probe (ping) sent
+    ///
+    /// This is useful to check if last_report is too outdated
+    #[serde(with="::serde_millis", default)]
+    pub probe_time: Option<SystemTime>,
+
+    /// Last report directly to this host
+    #[serde(with="::serde_millis", default)]
     pub last_report_direct: Option<SystemTime>,
+
+    #[serde(skip)]
+    _non_exhaustive: (),
 }
 
 /// A response to the `get_peers()` request
@@ -55,6 +71,7 @@ struct PeersCodec {
 }
 
 impl Connection {
+    /// Start a request that returns a list of peers known to cantal
     pub fn get_peers(&self) -> ResponseFuture<PeersResponse> {
         let (tx, rx) = channel();
         let pcodec = PeersCodec {

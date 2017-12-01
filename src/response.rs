@@ -6,9 +6,11 @@ use errors::BadResponse;
 
 
 /// Future returned by connection methods that fetches data T from cantal
+#[derive(Debug)]
 pub struct ResponseFuture<T>(State<T>);
 
-pub enum State<T> {
+#[derive(Debug)]
+pub(crate) enum State<T> {
     Waiting(Receiver<T>),
     Error(Option<Error>),
 }
