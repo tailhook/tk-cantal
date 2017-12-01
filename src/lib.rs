@@ -1,5 +1,9 @@
 //! # Cantal Client
 //!
+//! [Documentation](https://docs.rs/tk-cantal) |
+//! [Github](https://github.com/tailhook/tk-cantal) |
+//! [Crate](https://crates.io/crates/tk-cantal)
+//!
 //! This client is usually used to find out peers known to cantal, i.e. peers
 //! of the current cluster.
 //!

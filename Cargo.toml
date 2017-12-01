@@ -5,7 +5,7 @@ description = """
     to the cantal. This library is for accessing metrics that cantal tracks.
 """
 license = "MIT/Apache-2.0"
-readme = "README.rst"
+readme = "README.md"
 keywords = ["cantal", "metrics", "tokio", "monitoring"]
 categories = ["asynchronous", "network-programming"]
 homepage = "http://github.com/tailhook/tk-cantal"

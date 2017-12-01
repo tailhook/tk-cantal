@@ -1,12 +1,13 @@
-=====================
 Cantal Client Library
 =====================
 
-:Status: Alpha
-:Documentation: http://docs.rs/tk-cantal/
+**Status: Beta**
 
+[Documentation](https://docs.rs/tk-cantal) |
+[Github](https://github.com/tailhook/tk-cantal) |
+[Crate](https://crates.io/crates/tk-cantal)
 
-A client for cantal_ monitoring service. This is not for submitting metrics
+A client for cantal_ monitoring service. This is **not** for submitting metrics
 to the cantal. This library is for **accessing** metrics that cantal tracks.
 
 Because cantal_ has no stable public API yet, this uses private APIs which may
