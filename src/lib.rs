@@ -16,7 +16,6 @@
 #![warn(missing_docs)]
 #![warn(missing_debug_implementations)]
 extern crate abstract_ns;
-extern crate failure;
 extern crate futures;
 extern crate serde;
 extern crate serde_json;
@@ -28,7 +27,7 @@ extern crate tokio_io;
 
 #[macro_use] extern crate log;
 #[macro_use] extern crate serde_derive;
-#[macro_use] extern crate failure_derive;
+#[macro_use] extern crate failure;
 
 use std::fmt;
 
