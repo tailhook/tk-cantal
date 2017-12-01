@@ -33,8 +33,8 @@ pub struct Peer {
     pub known_since: SystemTime,
     // /// Last report directly to this node unixtime in milliseconds
     // TODO(tailhook) when serde_millis fixes it
-    //#[serde(with="::serde_millis")]
-    //pub last_report_direct: Option<SystemTime>,
+    #[serde(with="::serde_millis")]
+    pub last_report_direct: Option<SystemTime>,
 }
 
 /// A response to the `get_peers()` request
