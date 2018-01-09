@@ -8,6 +8,7 @@ use tk_pool::{self, pool_for};
 use tokio_core::reactor::Handle;
 use tokio_core::net::TcpStream;
 
+use pool_log::Logger;
 use {Connection};
 
 pub type Pool = tk_pool::queue::Pool<Box<Codec<TcpStream,
@@ -29,6 +30,7 @@ pub fn connect_local(h: &Handle) -> Connection {
                 .chain(empty().into_stream()))
         .lazy_uniform_connections(1)
         .with_queue_size(1)
+        .errors(Logger)
         .spawn_on(h);
     return Connection {
         pool: pool,

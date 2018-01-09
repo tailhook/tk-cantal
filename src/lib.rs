@@ -35,6 +35,7 @@ mod connect;
 mod peers;
 mod response;
 mod errors;
+mod pool_log;
 
 pub use connect::connect_local;
 pub use response::ResponseFuture;
