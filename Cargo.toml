@@ -28,5 +28,5 @@ serde_millis = "0.1.1"
 failure = "0.1.1"
 
 [dev-dependencies]
-env_logger = "0.4.2"
+env_logger = "0.5.7"
 tk-easyloop = "0.1.1"
